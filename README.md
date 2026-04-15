@@ -39,11 +39,10 @@ gh repo create NON-SHOW-tracker- --public --source=. --push
 
 1. Ve a tu repo en GitHub
 2. Settings → Pages
-3. Source: selecciona **main** branch
-4. Root directory: **/root** (o root si aparece)
-5. Click "Save"
+3. En **Build and deployment**, selecciona **GitHub Actions**
+4. Haz push a `main` (el workflow `Deploy GitHub Pages` publica el sitio automáticamente)
 
-Espera 1-2 minutos. Tu app estará en: **`https://YOUR_USERNAME.github.io/NON-SHOW-tracker-/`**
+Espera 1-2 minutos después del primer deploy. Tu app estará en: **`https://YOUR_USERNAME.github.io/NON-SHOW-tracker-/`**
 
 ---
 
@@ -103,7 +102,7 @@ Cada miembro del equipo necesita su propio token para poder guardar datos.
 |----------|----------|
 | "Error al cargar" | Verifica que hayas editado `GITHUB_OWNER` correctamente |
 | "Token inválido" | Regenera el token en GitHub (Settings → Personal tokens) |
-| Página en blanco | Espera 2 min después de habilitar Pages. Limpia cache (Cmd+Shift+R) |
+| Página en blanco / 404 | Verifica que el workflow **Deploy GitHub Pages** haya corrido en `main` y que Pages use **GitHub Actions** |
 | No puedo guardar | Verifica que el token tenga permiso `repo` |
 
 ---

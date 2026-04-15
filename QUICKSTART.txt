@@ -18,10 +18,11 @@ PABLO: Setup inicial (5 min)
    gh repo create NON-SHOW-tracker- --public --source=. --push
 
 3. GitHub Pages setup:
-   - Ve a tu repo
-   - Settings → Pages
-   - Source: main branch
-   - Espera 1-2 minutos
+    - Ve a tu repo
+    - Settings → Pages
+    - Source: GitHub Actions
+    - Haz push a main
+    - Espera a que termine "Deploy GitHub Pages"
 
 4. Tu URL será:
    https://PabloMargara.github.io/NON-SHOW-tracker-/
@@ -61,6 +62,7 @@ PROBLEMAS?
 ──────────
 
 - "Error al cargar"? → Limpia cache (Cmd+Shift+R)
+- ¿Ves 404? → Revisa Actions y confirma que Pages use GitHub Actions
 - Token no funciona? → Genera uno nuevo
 - ¿Ver cambios de otros? → F5 para refrescar
 
@@ -74,4 +76,3 @@ VERSIONS.md   ← Online vs Local
 
 Para versión LOCAL (no online):
   ./noshow.sh (necesita Terminal + Python3)
-

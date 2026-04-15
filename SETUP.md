@@ -26,9 +26,9 @@ gh repo create NON-SHOW-tracker- --public --source=. --push
 1. Ve a GitHub → tu repo `NON-SHOW-tracker-`
 2. **Settings** → **Pages**
 3. Bajo "Build and deployment":
-   - Source: selecciona `main` branch
-   - Carpeta: `/root`
-   - Click **Save**
+   - Source: selecciona **GitHub Actions**
+4. Haz push a `main`
+5. Espera a que termine el workflow **Deploy GitHub Pages**
 
 Espera 1-2 minutos. Tu URL será:
 ```
@@ -75,6 +75,11 @@ Cada persona:
 - [ ] Espera 2 minutos después de activar Pages
 - [ ] Limpia cache: Cmd+Shift+R (Mac) o Ctrl+Shift+R (Windows)
 - [ ] Verifica que `GITHUB_OWNER` sea tu usuario real
+
+### Si ves 404 en GitHub Pages
+- [ ] Verifica que Pages esté configurado con **GitHub Actions**
+- [ ] Revisa la pestaña **Actions** y confirma que `Deploy GitHub Pages` terminó bien
+- [ ] Confirma que los cambios ya estén en `main`
 
 ### Si el token no funciona
 - [ ] Verifica que hayas seleccionado scope `repo`
