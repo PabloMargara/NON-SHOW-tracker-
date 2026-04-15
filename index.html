@@ -746,7 +746,7 @@
                 const res = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -781,7 +781,7 @@
             try {
                 const res = await fetch(url, {
                     headers: {
-                        'Authorization': `token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Accept': 'application/vnd.github.v3.raw'
                     }
                 });
@@ -791,7 +791,7 @@
                     data = JSON.parse(text);
                     // Get sha
                     const metaRes = await fetch(url, {
-                        headers: { 'Authorization': `token ${token}` }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const meta = await metaRes.json();
                     fileSha = meta.sha;
