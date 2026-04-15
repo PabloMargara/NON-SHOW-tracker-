@@ -1,0 +1,77 @@
+╔════════════════════════════════════════════════════════════════╗
+║          UXR NO-SHOW TRACKER - QUICKSTART (ONLINE)             ║
+╚════════════════════════════════════════════════════════════════╝
+
+PABLO: Setup inicial (5 min)
+────────────────────────────────────────
+
+1. Edita index.html (línea ~540):
+   Cambio:
+     const GITHUB_OWNER = 'YOUR_USERNAME';
+   A:
+     const GITHUB_OWNER = 'pablomargara';  # Tu usuario de GitHub
+
+2. Sube a GitHub:
+   git init
+   git add .
+   git commit -m "Initial: UXR No-Show Tracker"
+   gh repo create uxr-noshow-tracker --public --source=. --push
+
+3. GitHub Pages setup:
+   - Ve a tu repo
+   - Settings → Pages
+   - Source: main branch
+   - Espera 1-2 minutos
+
+4. Tu URL será:
+   https://pablomargara.github.io/uxr-noshow-tracker/
+   (reemplaza "pablomargara" con tu usuario)
+
+
+TODOS (Anna, Aleja, Hector, Pablo): Setup token (1 min)
+────────────────────────────────────────
+
+1. GitHub → Settings → Developer settings → Personal access tokens
+   Link directo: https://github.com/settings/tokens
+
+2. Click "Generate new token (classic)"
+
+3. Name: uxr-noshow-tracker
+   Scope: repo (checkbox)
+
+4. Click Generate → Copia el token
+
+5. En la app:
+   - Click "Agregar Token"
+   - Pega el token
+   - ¡Listo!
+
+
+DIARIAMENTE
+────────────
+
+1. Abre: https://pablomargara.github.io/uxr-noshow-tracker/
+2. Entra con tu token
+3. Selecciona miembro + fecha
+4. Click "Registrar"
+5. ¡Los datos se guardan automáticamente!
+
+
+PROBLEMAS?
+──────────
+
+- "Error al cargar"? → Limpia cache (Cmd+Shift+R)
+- Token no funciona? → Genera uno nuevo
+- ¿Ver cambios de otros? → F5 para refrescar
+
+
+ARCHIVOS
+────────
+
+SETUP.md      ← Lee esto para setup paso-a-paso
+README.md     ← Documentación completa
+VERSIONS.md   ← Online vs Local
+
+Para versión LOCAL (no online):
+  ./noshow.sh (necesita Terminal + Python3)
+

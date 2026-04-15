@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UXR No-Show Tracker 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f0f13;
+            --surface: #1a1a24;
+            --surface-hover: #222233;
+            --border: #2a2a3a;
+            --text: #e8e8f0;
+            --text-muted: #8888a0;
+            --accent: #ff6b6b;
+            --accent-glow: rgba(255, 107, 107, 0.15);
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --anna: #ff6b9d;
+            --aleja: #c084fc;
+            --hector: #60a5fa;
+            --pablo: #34d399;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+        }
+
+        header h1 span { color: var(--accent); }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .auth-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-status.auth { color: var(--success); }
+        .auth-status.no-auth { color: var(--text-muted); }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.ok { background: var(--success); }
+        .status-dot.pending { background: var(--text-muted); }
+
+        .auth-input-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .auth-input-group input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: 'monospace';
+        }
+
+        .auth-input-group input:focus { outline: none; border-color: var(--accent); }
+        .auth-input-group input::placeholder { color: var(--text-muted); }
+
+        .btn-auth {
+            padding: 0.6rem 1.2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-auth:hover { opacity: 0.85; }
+
+        .btn-logout {
+            padding: 0.5rem 0.8rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { border-color: var(--text-muted); color: var(--text); }
+
+        /* Entry Form */
+        .entry-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .entry-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-group { flex: 1; min-width: 180px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .team-btn {
+            flex: 1;
+            padding: 0.7rem 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .team-btn:hover { border-color: var(--text-muted); }
+        .team-btn.selected { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+
+        .team-btn[data-member="Anna"].selected { border-color: var(--anna); background: rgba(255,107,157,0.15); color: var(--anna); }
+        .team-btn[data-member="Aleja"].selected { border-color: var(--aleja); background: rgba(192,132,252,0.15); color: var(--aleja); }
+        .team-btn[data-member="Hector"].selected { border-color: var(--hector); background: rgba(96,165,250,0.15); color: var(--hector); }
+        .team-btn[data-member="Pablo"].selected { border-color: var(--pablo); background: rgba(52,211,153,0.15); color: var(--pablo); }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        input[type="date"]:focus { outline: none; border-color: var(--accent); }
+
+        .btn-submit {
+            padding: 0.7rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-submit:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #22c55e;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--error); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card .rank {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .stat-card .rank.first { color: var(--gold); }
+        .stat-card .rank.second { color: var(--silver); }
+        .stat-card .rank.third { color: var(--bronze); }
+
+        .stat-card .name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-card .count {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 0.3rem 0;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card[data-member="Anna"] .name, .stat-card[data-member="Anna"] .count { color: var(--anna); }
+        .stat-card[data-member="Aleja"] .name, .stat-card[data-member="Aleja"] .count { color: var(--aleja); }
+        .stat-card[data-member="Hector"] .name, .stat-card[data-member="Hector"] .count { color: var(--hector); }
+        .stat-card[data-member="Pablo"] .name, .stat-card[data-member="Pablo"] .count { color: var(--pablo); }
+
+        /* Monthly Table */
+        .table-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .table-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.7rem 0.8rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th:first-child, td:first-child { text-align: left; }
+
+        td { border-bottom: 1px solid rgba(42,42,58,0.5); }
+
+        tr:last-child td { border-bottom: none; }
+
+        .member-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot.anna { background: var(--anna); }
+        .dot.aleja { background: var(--aleja); }
+        .dot.hector { background: var(--hector); }
+        .dot.pablo { background: var(--pablo); }
+
+        td.total-col {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        td.has-value { color: var(--text); }
+        td.zero-value { color: var(--text-muted); opacity: 0.4; }
+
+        /* Recent entries */
+        .recent-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .recent-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .recent-list { list-style: none; }
+
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(42,42,58,0.5);
+        }
+
+        .recent-item:last-child { border-bottom: none; }
+
+        .recent-item .ri-name { font-weight: 600; }
+        .recent-item .ri-date { color: var(--text-muted); font-size: 0.85rem; }
+
+        .recent-item .ri-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .recent-item .ri-delete:hover { background: rgba(255,107,107,0.15); color: var(--accent); }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        /* Chart */
+        .chart-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 200px;
+            padding-top: 1rem;
+        }
+
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar-stack {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 2px;
+            max-width: 60px;
+        }
+
+        .bar-segment {
+            width: 100%;
+            border-radius: 4px 4px 2px 2px;
+            min-height: 0;
+            transition: height 0.3s;
+        }
+
+        .bar-segment.anna { background: var(--anna); }
+        .bar-segment.aleja { background: var(--aleja); }
+        .bar-segment.hector { background: var(--hector); }
+        .bar-segment.pablo { background: var(--pablo); }
+
+        .bar-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            display: inline-block;
+            opacity: 0.6;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 0.8rem;
+            height: 0.8rem;
+            border: 2px solid var(--text-muted);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 700px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { flex-direction: column; }
+            .team-buttons { flex-wrap: wrap; }
+            .auth-section { flex-direction: column; align-items: flex-start; }
+            .auth-input-group { max-width: 100%; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UXR <span>No-Show</span> Tracker</h1>
+            <p>Equipo UXR &mdash; 2026 (Online)</p>
+        </header>
+
+        <!-- Auth -->
+        <div class="auth-section">
+            <div class="auth-status no-auth" id="auth-status">
+                <span class="status-dot pending"></span>
+                <span>No autenticado</span>
+            </div>
+            <div class="auth-input-group" id="auth-input-group" style="display: none;">
+                <input type="password" id="github-token" placeholder="Pega tu GitHub token...">
+                <button class="btn-auth" id="btn-auth-save">Guardar</button>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-auth" id="btn-auth-toggle">Agregar Token</button>
+                <button class="btn-logout" id="btn-logout" style="display: none;">Logout</button>
+            </div>
+        </div>
+
+        <div class="entry-section">
+            <h2>Registrar No-Show</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Miembro del equipo</label>
+                    <div class="team-buttons">
+                        <button class="team-btn" data-member="Anna">Anna</button>
+                        <button class="team-btn" data-member="Aleja">Aleja</button>
+                        <button class="team-btn" data-member="Hector">Hector</button>
+                        <button class="team-btn" data-member="Pablo">Pablo</button>
+                    </div>
+                </div>
+                <div class="form-group" style="max-width: 200px;">
+                    <label>Fecha</label>
+                    <input type="date" id="entry-date">
+                </div>
+                <button class="btn-submit" id="btn-add" disabled>Registrar</button>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <div class="chart-section">
+            <h2>No-Shows por Mes</h2>
+            <div class="bar-chart" id="bar-chart"></div>
+            <div class="chart-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--anna)"></div> Anna</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--aleja)"></div> Aleja</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--hector)"></div> Hector</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--pablo)"></div> Pablo</div>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h2>Desglose Mensual</h2>
+            <table id="monthly-table"></table>
+        </div>
+
+        <div class="recent-section">
+            <h2>Entradas Recientes</h2>
+            <ul class="recent-list" id="recent-list"></ul>
+        </div>
+
+        <footer>UXR No-Show Tracker &mdash; Que gane el peor reclutador</footer>
+    </div>
+
+    <div class="toast" id="toast">No-show registrado</div>
+
+    <script>
+        const MEMBERS = ['Anna', 'Aleja', 'Hector', 'Pablo'];
+        const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        const MONTH_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        // GitHub API config - CUSTOMIZE THESE
+        const GITHUB_OWNER = 'PabloMargara'; // Cambiar
+        const GITHUB_REPO = 'NON-SHOW-tracker-'; // Cambiar si es necesario
+        const GITHUB_FILE = 'data.json';
+
+        let data = { entries: [] };
+        let selectedMember = null;
+        let token = localStorage.getItem('github_token') || null;
+        let fileSha = null;
+
+        // Init
+        document.getElementById('entry-date').valueAsDate = new Date();
+
+        // Auth
+        document.getElementById('btn-auth-toggle').addEventListener('click', () => {
+            const group = document.getElementById('auth-input-group');
+            group.style.display = group.style.display === 'none' ? 'flex' : 'none';
+            if (group.style.display === 'flex') document.getElementById('github-token').focus();
+        });
+
+        document.getElementById('btn-auth-save').addEventListener('click', async () => {
+            const t = document.getElementById('github-token').value.trim();
+            if (!t) {
+                showToast('Token requerido', true);
+                return;
+            }
+            token = t;
+            localStorage.setItem('github_token', token);
+            document.getElementById('auth-input-group').style.display = 'none';
+            document.getElementById('github-token').value = '';
+            updateAuthStatus();
+            await loadData();
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            token = null;
+            localStorage.removeItem('github_token');
+            updateAuthStatus();
+            data = { entries: [] };
+            render();
+        });
+
+        function updateAuthStatus() {
+            const status = document.getElementById('auth-status');
+            const logout = document.getElementById('btn-logout');
+            if (token) {
+                status.innerHTML = '<span class="status-dot ok"></span><span>Autenticado</span>';
+                status.className = 'auth-status auth';
+                logout.style.display = 'block';
+                document.getElementById('btn-auth-toggle').textContent = 'Token guardado ✓';
+            } else {
+                status.innerHTML = '<span class="status-dot pending"></span><span>No autenticado</span>';
+                status.className = 'auth-status no-auth';
+                logout.style.display = 'none';
+                document.getElementById('btn-auth-toggle').textContent = 'Agregar Token';
+            }
+        }
+
+        // Team button selection
+        document.querySelectorAll('.team-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedMember = btn.dataset.member;
+                document.getElementById('btn-add').disabled = !token;
+            });
+        });
+
+        // Add entry
+        document.getElementById('btn-add').addEventListener('click', async () => {
+            if (!token) {
+                showToast('Necesitas autenticarte primero', true);
+                return;
+            }
+            const date = document.getElementById('entry-date').value;
+            if (!selectedMember || !date) return;
+
+            const btn = document.getElementById('btn-add');
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            const entry = { member: selectedMember, date: date };
+            data.entries.push(entry);
+
+            const success = await saveToGitHub();
+            if (success) {
+                render();
+                showToast(`No-show de ${selectedMember} registrado`);
+                // Reset
+                document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+                selectedMember = null;
+                document.getElementById('entry-date').valueAsDate = new Date();
+            } else {
+                // Undo
+                data.entries.pop();
+                showToast('Error al guardar. Verifica tu token.', true);
+            }
+
+            btn.disabled = false;
+            btn.textContent = origText;
+        });
+
+        // Delete entry
+        async function deleteEntry(index) {
+            data.entries.splice(index, 1);
+            const btn = event.target;
+            btn.disabled = true;
+            const success = await saveToGitHub();
+            if (success) {
+                render();
+                showToast('Entrada eliminada');
+            } else {
+                data.entries.splice(index, 0, data.entries[index]); // Undo
+                showToast('Error al eliminar', true);
+            }
+            btn.disabled = false;
+        }
+
+        // GitHub API
+        async function saveToGitHub() {
+            if (!token) return false;
+            const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+            const content = btoa(JSON.stringify(data, null, 2)); // base64
+
+            try {
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: `Update no-show data - ${new Date().toLocaleString()}`,
+                        content: content,
+                        sha: fileSha // Para evitar conflictos
+                    })
+                });
+
+                if (!res.ok) {
+                    console.error('GitHub API error:', res.status, res.statusText);
+                    return false;
+                }
+
+                const result = await res.json();
+                fileSha = result.content.sha;
+                return true;
+            } catch (e) {
+                console.error('Save error:', e);
+                return false;
+            }
+        }
+
+        async function loadData() {
+            if (!token) {
+                render();
+                return;
+            }
+
+            const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+
+            try {
+                const res = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3.raw'
+                    }
+                });
+
+                if (res.ok) {
+                    const text = await res.text();
+                    data = JSON.parse(text);
+                    // Get sha
+                    const metaRes = await fetch(url, {
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    const meta = await metaRes.json();
+                    fileSha = meta.sha;
+                } else if (res.status === 404) {
+                    // File doesn't exist, will create on first save
+                    data = { entries: [] };
+                } else {
+                    showToast('Error al cargar. Token inválido?', true);
+                    return;
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+                showToast('Error de conexion', true);
+                return;
+            }
+
+            render();
+        }
+
+        // Toast
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.toggle('error', isError);
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        // Compute stats
+        function getStats() {
+            const counts = {};
+            const monthly = {};
+            MEMBERS.forEach(m => {
+                counts[m] = 0;
+                monthly[m] = new Array(12).fill(0);
+            });
+
+            data.entries.forEach(e => {
+                if (!MEMBERS.includes(e.member)) return;
+                counts[e.member]++;
+                const month = new Date(e.date).getMonth();
+                monthly[e.member][month]++;
+            });
+
+            const ranked = MEMBERS.map(m => ({ name: m, count: counts[m] }))
+                .sort((a, b) => b.count - a.count);
+
+            return { counts, monthly, ranked };
+        }
+
+        // Render everything
+        function render() {
+            const { counts, monthly, ranked } = getStats();
+            renderStats(ranked);
+            renderTable(monthly, counts);
+            renderChart(monthly);
+            renderRecent();
+        }
+
+        function renderStats(ranked) {
+            const grid = document.getElementById('stats-grid');
+            const rankLabels = ['1st', '2nd', '3rd', '4th'];
+            const rankClasses = ['first', 'second', 'third', ''];
+
+            grid.innerHTML = ranked.map((r, i) => `
+                <div class="stat-card" data-member="${r.name}">
+                    <div class="rank ${rankClasses[i]}">${rankLabels[i]}</div>
+                    <div class="name">${r.name}</div>
+                    <div class="count">${r.count}</div>
+                    <div class="label">no-shows</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTable(monthly, counts) {
+            const table = document.getElementById('monthly-table');
+            const header = `<tr><th>Miembro</th>${MONTHS.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr>`;
+
+            const rows = MEMBERS.map(m => {
+                const cells = monthly[m].map(v =>
+                    `<td class="${v > 0 ? 'has-value' : 'zero-value'}">${v}</td>`
+                ).join('');
+                return `<tr>
+                    <td><div class="member-label"><span class="dot ${m.toLowerCase()}"></span>${m}</div></td>
+                    ${cells}
+                    <td class="total-col">${counts[m]}</td>
+                </tr>`;
+            }).join('');
+
+            table.innerHTML = header + rows;
+        }
+
+        function renderChart(monthly) {
+            const chart = document.getElementById('bar-chart');
+
+            let maxMonthly = 0;
+            for (let mo = 0; mo < 12; mo++) {
+                let total = MEMBERS.reduce((s, m) => s + monthly[m][mo], 0);
+                if (total > maxMonthly) maxMonthly = total;
+            }
+            if (maxMonthly === 0) maxMonthly = 1;
+
+            chart.innerHTML = MONTHS.map((label, mo) => {
+                const segments = MEMBERS.map(m => {
+                    const val = monthly[m][mo];
+                    const h = val > 0 ? Math.max((val / maxMonthly) * 170, 6) : 0;
+                    return val > 0 ? `<div class="bar-segment ${m.toLowerCase()}" style="height:${h}px" title="${m}: ${val}"></div>` : '';
+                }).join('');
+                return `<div class="bar-group">
+                    <div class="bar-stack">${segments}</div>
+                    <div class="bar-label">${label}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderRecent() {
+            const list = document.getElementById('recent-list');
+            const recent = [...data.entries].reverse().slice(0, 15);
+
+            if (recent.length === 0) {
+                list.innerHTML = '<li class="empty-state">No hay entradas aun. Registra el primer no-show arriba.</li>';
+                return;
+            }
+
+            list.innerHTML = recent.map((e, i) => {
+                const realIndex = data.entries.length - 1 - i;
+                const d = new Date(e.date + 'T12:00:00');
+                const dateStr = `${d.getDate()} ${MONTH_FULL[d.getMonth()]} ${d.getFullYear()}`;
+                return `<li class="recent-item">
+                    <span class="ri-name"><span class="dot ${e.member.toLowerCase()}"></span> ${e.member}</span>
+                    <span class="ri-date">${dateStr}</span>
+                    <button class="ri-delete" onclick="deleteEntry(${realIndex})">eliminar</button>
+                </li>`;
+            }).join('');
+        }
+
+        // Init
+        updateAuthStatus();
+        if (token) loadData();
+    </script>
+</body>
+</html>
