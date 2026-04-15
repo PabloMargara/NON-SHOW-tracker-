@@ -10,17 +10,17 @@ Track no-shows across the UXR team with a shared online dashboard. At the end of
 
 ### 1. Customizar el código
 
-Edita `index.html` y busca estas líneas (cerca de la línea 540):
+Edita `index.html` y busca estas líneas (cerca de la línea 621):
 
 ```javascript
 const GITHUB_OWNER = 'YOUR_USERNAME'; // Cambiar a tu usuario de GitHub
-const GITHUB_REPO = 'uxr-noshow-tracker'; // Si el repo tiene otro nombre
+const GITHUB_REPO = 'NON-SHOW-tracker-'; // Si el repo tiene otro nombre
 ```
 
 Ejemplo:
 ```javascript
-const GITHUB_OWNER = 'pablomargara';
-const GITHUB_REPO = 'uxr-noshow-tracker';
+const GITHUB_OWNER = 'PabloMargara';
+const GITHUB_REPO = 'NON-SHOW-tracker-';
 ```
 
 ### 2. Crear el repo en GitHub
@@ -30,7 +30,7 @@ cd "NON-SHOW - Counter"
 git init
 git add .
 git commit -m "Initial: UXR No-Show Tracker 2026"
-gh repo create uxr-noshow-tracker --public --source=. --push
+gh repo create NON-SHOW-tracker- --public --source=. --push
 ```
 
 **Nota:** Debe ser **público** para que GitHub Pages funcione en la versión gratuita.
@@ -43,7 +43,7 @@ gh repo create uxr-noshow-tracker --public --source=. --push
 4. Root directory: **/root** (o root si aparece)
 5. Click "Save"
 
-Espera 1-2 minutos. Tu app estará en: **`https://YOUR_USERNAME.github.io/uxr-noshow-tracker/`**
+Espera 1-2 minutos. Tu app estará en: **`https://YOUR_USERNAME.github.io/NON-SHOW-tracker-/`**
 
 ---
 
@@ -58,7 +58,7 @@ Cada miembro del equipo necesita su propio token para poder guardar datos.
 
 2. Click **"Generate new token (classic)"**
 
-3. Dale un nombre: `uxr-noshow-tracker`
+3. Dale un nombre: `NON-SHOW-tracker`
 
 4. Selecciona solo este scope:
    - ☑️ `repo` (acceso a repositorios privados y públicos)
@@ -78,7 +78,7 @@ Cada miembro del equipo necesita su propio token para poder guardar datos.
 
 ## 📱 Uso diario
 
-1. Abre la app: **`https://YOUR_USERNAME.github.io/uxr-noshow-tracker/`**
+1. Abre la app: **`https://YOUR_USERNAME.github.io/NON-SHOW-tracker-/`**
 2. Click **"Agregar Token"** y pega tu personal access token
 3. Selecciona el miembro del equipo
 4. Selecciona la fecha
@@ -131,7 +131,7 @@ Cada miembro del equipo necesita su propio token para poder guardar datos.
 
 ## ⚡ En vivo
 
-- **URL:** `https://YOUR_USERNAME.github.io/uxr-noshow-tracker/`
+- **URL:** `https://YOUR_USERNAME.github.io/NON-SHOW-tracker-/`
 - **Datos:** Guardados en `data.json` del repo
 - **Sincronización:** Instantánea (actualiza cuando haces cambios)
 

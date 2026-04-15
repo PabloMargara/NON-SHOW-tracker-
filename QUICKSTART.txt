@@ -5,17 +5,17 @@
 PABLO: Setup inicial (5 min)
 ────────────────────────────────────────
 
-1. Edita index.html (línea ~540):
+1. Edita index.html (línea ~621):
    Cambio:
      const GITHUB_OWNER = 'YOUR_USERNAME';
    A:
-     const GITHUB_OWNER = 'pablomargara';  # Tu usuario de GitHub
+     const GITHUB_OWNER = 'PabloMargara';  # Tu usuario de GitHub
 
 2. Sube a GitHub:
    git init
    git add .
    git commit -m "Initial: UXR No-Show Tracker"
-   gh repo create uxr-noshow-tracker --public --source=. --push
+   gh repo create NON-SHOW-tracker- --public --source=. --push
 
 3. GitHub Pages setup:
    - Ve a tu repo
@@ -24,8 +24,8 @@ PABLO: Setup inicial (5 min)
    - Espera 1-2 minutos
 
 4. Tu URL será:
-   https://pablomargara.github.io/uxr-noshow-tracker/
-   (reemplaza "pablomargara" con tu usuario)
+   https://PabloMargara.github.io/NON-SHOW-tracker-/
+   (reemplaza "PabloMargara" con tu usuario)
 
 
 TODOS (Anna, Aleja, Hector, Pablo): Setup token (1 min)
@@ -36,7 +36,7 @@ TODOS (Anna, Aleja, Hector, Pablo): Setup token (1 min)
 
 2. Click "Generate new token (classic)"
 
-3. Name: uxr-noshow-tracker
+3. Name: NON-SHOW-tracker
    Scope: repo (checkbox)
 
 4. Click Generate → Copia el token
@@ -50,7 +50,7 @@ TODOS (Anna, Aleja, Hector, Pablo): Setup token (1 min)
 DIARIAMENTE
 ────────────
 
-1. Abre: https://pablomargara.github.io/uxr-noshow-tracker/
+1. Abre: https://PabloMargara.github.io/NON-SHOW-tracker-/
 2. Entra con tu token
 3. Selecciona miembro + fecha
 4. Click "Registrar"
