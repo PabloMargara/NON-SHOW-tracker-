@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UXR No-Show Tracker 2026</title>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f0f13;
+            --surface: #1a1a24;
+            --border: #2a2a3a;
+            --text: #e8e8f0;
+            --text-muted: #8888a0;
+            --accent: #ff6b6b;
+            --accent-glow: rgba(255, 107, 107, 0.15);
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --anna: #ff6b9d;
+            --aleja: #c084fc;
+            --hector: #60a5fa;
+            --pablo: #34d399;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── LOGIN SCREEN ── */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .login-card .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .login-card h1 span { color: var(--accent); }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            background: white;
+            color: #1f1f1f;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-google:hover { background: #f5f5f5; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .btn-google:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-google svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .login-note {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ── MAIN APP ── */
+        .app-screen {
+            padding: 2rem;
+            display: none;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        header .title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header .title h1 span { color: var(--accent); }
+
+        header .title p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+        }
+
+        .user-badge img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-badge .user-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-signout {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .btn-signout:hover { color: var(--accent); }
+
+        /* Entry Form */
+        .entry-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .entry-section h2 {
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-group { flex: 1; min-width: 180px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .team-btn {
+            flex: 1;
+            padding: 0.7rem 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .team-btn:hover { border-color: var(--text-muted); }
+        .team-btn.selected[data-member="Anna"]   { border-color: var(--anna);   background: rgba(255,107,157,0.15);  color: var(--anna); }
+        .team-btn.selected[data-member="Aleja"]  { border-color: var(--aleja);  background: rgba(192,132,252,0.15);  color: var(--aleja); }
+        .team-btn.selected[data-member="Hector"] { border-color: var(--hector); background: rgba(96,165,250,0.15);   color: var(--hector); }
+        .team-btn.selected[data-member="Pablo"]  { border-color: var(--pablo);  background: rgba(52,211,153,0.15);   color: var(--pablo); }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        input[type="date"]:focus { outline: none; border-color: var(--accent); }
+
+        .btn-submit {
+            padding: 0.75rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-submit:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.3rem;
+            text-align: center;
+        }
+
+        .stat-card .rank {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .stat-card .rank.first  { color: var(--gold); }
+        .stat-card .rank.second { color: var(--silver); }
+        .stat-card .rank.third  { color: var(--bronze); }
+
+        .stat-card .name  { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .stat-card .count { font-size: 2.5rem; font-weight: 800; line-height: 1; margin: 0.3rem 0; }
+        .stat-card .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .stat-card[data-member="Anna"]   .name, .stat-card[data-member="Anna"]   .count { color: var(--anna); }
+        .stat-card[data-member="Aleja"]  .name, .stat-card[data-member="Aleja"]  .count { color: var(--aleja); }
+        .stat-card[data-member="Hector"] .name, .stat-card[data-member="Hector"] .count { color: var(--hector); }
+        .stat-card[data-member="Pablo"]  .name, .stat-card[data-member="Pablo"]  .count { color: var(--pablo); }
+
+        /* Chart */
+        .chart-section, .table-section, .recent-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 200px;
+            padding-top: 1rem;
+        }
+
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar-stack {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 2px;
+            max-width: 60px;
+        }
+
+        .bar-segment { width: 100%; border-radius: 4px 4px 2px 2px; transition: height 0.3s; }
+        .bar-segment.anna   { background: var(--anna); }
+        .bar-segment.aleja  { background: var(--aleja); }
+        .bar-segment.hector { background: var(--hector); }
+        .bar-segment.pablo  { background: var(--pablo); }
+
+        .bar-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td { padding: 0.7rem 0.8rem; text-align: center; font-size: 0.85rem; }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th:first-child, td:first-child { text-align: left; }
+
+        td { border-bottom: 1px solid rgba(42,42,58,0.5); }
+        tr:last-child td { border-bottom: none; }
+
+        .member-label { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot.anna   { background: var(--anna); }
+        .dot.aleja  { background: var(--aleja); }
+        .dot.hector { background: var(--hector); }
+        .dot.pablo  { background: var(--pablo); }
+
+        td.total-col { font-weight: 700; font-size: 1rem; }
+        td.has-value  { color: var(--text); }
+        td.zero-value { color: var(--text-muted); opacity: 0.4; }
+
+        /* Recent */
+        .recent-list { list-style: none; }
+
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(42,42,58,0.5);
+        }
+
+        .recent-item:last-child { border-bottom: none; }
+        .recent-item .ri-name  { font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .recent-item .ri-right { display: flex; align-items: center; gap: 1rem; }
+        .recent-item .ri-date  { color: var(--text-muted); font-size: 0.85rem; }
+        .recent-item .ri-by    { color: var(--text-muted); font-size: 0.75rem; }
+
+        .btn-del {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.78rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-del:hover { background: rgba(255,107,107,0.15); color: var(--accent); }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.err  { background: var(--error); }
+
+        /* Spinner */
+        .spin {
+            display: inline-block;
+            width: 0.85rem;
+            height: 0.85rem;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0 3rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        @media (max-width: 700px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { flex-direction: column; }
+            .team-buttons { flex-wrap: wrap; }
+            .app-screen { padding: 1rem; }
+            header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ───── LOGIN SCREEN ───── -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-card">
+            <div class="logo">📋</div>
+            <h1>UXR <span>No-Show</span></h1>
+            <p>Tracker del equipo UXR &mdash; 2026</p>
+
+            <button class="btn-google" id="btn-google-login">
+                <!-- Google "G" logo -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Entrar con Google
+            </button>
+
+            <p class="login-note">Solo miembros del equipo UXR.<br>Tu sesión se guarda en este navegador.</p>
+        </div>
+    </div>
+
+    <!-- ───── MAIN APP ───── -->
+    <div class="app-screen" id="app-screen">
+        <div class="container">
+
+            <header>
+                <div class="title">
+                    <h1>UXR <span>No-Show</span> Tracker</h1>
+                    <p>Equipo UXR &mdash; 2026</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.8rem;">
+                    <div class="user-badge">
+                        <img id="user-avatar" src="" alt="avatar" onerror="this.style.display='none'">
+                        <span class="user-name" id="user-name">...</span>
+                    </div>
+                    <button class="btn-signout" id="btn-signout">Salir</button>
+                </div>
+            </header>
+
+            <!-- Entry Form -->
+            <div class="entry-section">
+                <div class="section-title">Registrar No-Show</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Miembro del equipo</label>
+                        <div class="team-buttons">
+                            <button class="team-btn" data-member="Anna">Anna</button>
+                            <button class="team-btn" data-member="Aleja">Aleja</button>
+                            <button class="team-btn" data-member="Hector">Hector</button>
+                            <button class="team-btn" data-member="Pablo">Pablo</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="max-width:200px;">
+                        <label>Fecha</label>
+                        <input type="date" id="entry-date">
+                    </div>
+                    <button class="btn-submit" id="btn-add" disabled>Registrar</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" id="stats-grid"></div>
+
+            <!-- Chart -->
+            <div class="chart-section">
+                <div class="section-title">No-Shows por Mes</div>
+                <div class="bar-chart" id="bar-chart"></div>
+                <div class="chart-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--anna)"></div> Anna</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--aleja)"></div> Aleja</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--hector)"></div> Hector</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--pablo)"></div> Pablo</div>
+                </div>
+            </div>
+
+            <!-- Monthly Table -->
+            <div class="table-section">
+                <div class="section-title">Desglose Mensual</div>
+                <div style="overflow-x:auto;"><table id="monthly-table"></table></div>
+            </div>
+
+            <!-- Recent -->
+            <div class="recent-section">
+                <div class="section-title">Entradas Recientes</div>
+                <ul class="recent-list" id="recent-list"></ul>
+            </div>
+
+            <footer>UXR No-Show Tracker — Que gane el peor reclutador 🏆</footer>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ╔══════════════════════════════════════════╗
+        // ║  CONFIGURACIÓN — editar con tus valores  ║
+        // ╚══════════════════════════════════════════╝
+        const SUPABASE_URL  = 'https://sndfpwokkgqlxylkfxfx.supabase.co';
+        const SUPABASE_ANON = 'sb_publishable_iZ80o9a6xxn0123VYv4MLA_ARMfgS9i';
+
+        // ── Constantes ──
+        const MEMBERS     = ['Anna', 'Aleja', 'Hector', 'Pablo'];
+        const MONTHS      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        const MONTH_FULL  = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        // ── Supabase client ──
+        const { createClient } = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        let entries = [];
+        let selectedMember = null;
+        let currentUser = null;
+
+        // ─────────────────────────────
+        //  AUTH
+        // ─────────────────────────────
+
+        document.getElementById('btn-google-login').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-google-login');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spin"></span>&nbsp; Entrando...';
+
+            const { error } = await db.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.href
+                }
+            });
+
+            if (error) {
+                showToast('Error al iniciar sesión: ' + error.message, true);
+                btn.disabled = false;
+                btn.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Entrar con Google`;
+            }
+        });
+
+        document.getElementById('btn-signout').addEventListener('click', async () => {
+            await db.auth.signOut();
+        });
+
+        // Listen to auth state
+        db.auth.onAuthStateChange(async (event, session) => {
+            if (session?.user) {
+                currentUser = session.user;
+                showApp(session.user);
+                await loadEntries();
+            } else {
+                currentUser = null;
+                showLogin();
+            }
+        });
+
+        function showApp(user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+
+            const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuario';
+            const avatar = user.user_metadata?.avatar_url || '';
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-avatar').src = avatar;
+        }
+
+        function showLogin() {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('app-screen').style.display = 'none';
+        }
+
+        // ─────────────────────────────
+        //  FORM
+        // ─────────────────────────────
+
+        document.getElementById('entry-date').valueAsDate = new Date();
+
+        document.querySelectorAll('.team-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedMember = btn.dataset.member;
+                document.getElementById('btn-add').disabled = false;
+            });
+        });
+
+        document.getElementById('btn-add').addEventListener('click', async () => {
+            const date = document.getElementById('entry-date').value;
+            if (!selectedMember || !date) return;
+
+            const btn = document.getElementById('btn-add');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spin"></span>';
+
+            const { error } = await db
+                .from('entries')
+                .insert({ member: selectedMember, date: date, created_by: currentUser.id });
+
+            if (error) {
+                showToast('Error al guardar: ' + error.message, true);
+            } else {
+                showToast(`No-show de ${selectedMember} registrado`);
+                document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+                selectedMember = null;
+                document.getElementById('entry-date').valueAsDate = new Date();
+                await loadEntries();
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Registrar';
+        });
+
+        // ─────────────────────────────
+        //  DATA
+        // ─────────────────────────────
+
+        async function loadEntries() {
+            const { data, error } = await db
+                .from('entries')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                showToast('Error al cargar datos', true);
+                return;
+            }
+
+            entries = data || [];
+            render();
+        }
+
+        async function deleteEntry(id) {
+            const { error } = await db.from('entries').delete().eq('id', id);
+            if (error) {
+                showToast('Error al eliminar', true);
+            } else {
+                showToast('Entrada eliminada');
+                await loadEntries();
+            }
+        }
+
+        // ─────────────────────────────
+        //  RENDER
+        // ─────────────────────────────
+
+        function getStats() {
+            const counts = {};
+            const monthly = {};
+            MEMBERS.forEach(m => { counts[m] = 0; monthly[m] = new Array(12).fill(0); });
+
+            entries.forEach(e => {
+                if (!MEMBERS.includes(e.member)) return;
+                counts[e.member]++;
+                const month = new Date(e.date).getMonth();
+                monthly[e.member][month]++;
+            });
+
+            const ranked = MEMBERS.map(m => ({ name: m, count: counts[m] }))
+                .sort((a, b) => b.count - a.count);
+
+            return { counts, monthly, ranked };
+        }
+
+        function render() {
+            const { counts, monthly, ranked } = getStats();
+            renderStats(ranked);
+            renderChart(monthly);
+            renderTable(monthly, counts);
+            renderRecent();
+        }
+
+        function renderStats(ranked) {
+            const rlabels = ['1st', '2nd', '3rd', '4th'];
+            const rclass  = ['first', 'second', 'third', ''];
+            document.getElementById('stats-grid').innerHTML = ranked.map((r, i) => `
+                <div class="stat-card" data-member="${r.name}">
+                    <div class="rank ${rclass[i]}">${rlabels[i]}</div>
+                    <div class="name">${r.name}</div>
+                    <div class="count">${r.count}</div>
+                    <div class="label">no-shows</div>
+                </div>
+            `).join('');
+        }
+
+        function renderChart(monthly) {
+            let max = 0;
+            for (let mo = 0; mo < 12; mo++) {
+                const t = MEMBERS.reduce((s, m) => s + monthly[m][mo], 0);
+                if (t > max) max = t;
+            }
+            if (max === 0) max = 1;
+
+            document.getElementById('bar-chart').innerHTML = MONTHS.map((label, mo) => {
+                const segs = MEMBERS.map(m => {
+                    const v = monthly[m][mo];
+                    const h = v > 0 ? Math.max((v / max) * 170, 6) : 0;
+                    return v > 0
+                        ? `<div class="bar-segment ${m.toLowerCase()}" style="height:${h}px" title="${m}: ${v}"></div>`
+                        : '';
+                }).join('');
+                return `<div class="bar-group"><div class="bar-stack">${segs}</div><div class="bar-label">${label}</div></div>`;
+            }).join('');
+        }
+
+        function renderTable(monthly, counts) {
+            const header = `<tr><th>Miembro</th>${MONTHS.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr>`;
+            const rows = MEMBERS.map(m => {
+                const cells = monthly[m].map(v =>
+                    `<td class="${v > 0 ? 'has-value' : 'zero-value'}">${v}</td>`
+                ).join('');
+                return `<tr>
+                    <td><div class="member-label"><span class="dot ${m.toLowerCase()}"></span>${m}</div></td>
+                    ${cells}
+                    <td class="total-col">${counts[m]}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('monthly-table').innerHTML = header + rows;
+        }
+
+        function renderRecent() {
+            const list = document.getElementById('recent-list');
+            const recent = entries.slice(0, 20);
+
+            if (!recent.length) {
+                list.innerHTML = '<li class="empty-state">No hay entradas aún. Registra el primer no-show arriba.</li>';
+                return;
+            }
+
+            list.innerHTML = recent.map(e => {
+                const d = new Date(e.date + 'T12:00:00');
+                const dateStr = `${d.getDate()} ${MONTH_FULL[d.getMonth()]} ${d.getFullYear()}`;
+                const canDelete = currentUser && (e.created_by === currentUser.id);
+                return `<li class="recent-item">
+                    <span class="ri-name"><span class="dot ${e.member.toLowerCase()}"></span>${e.member}</span>
+                    <div class="ri-right">
+                        <span class="ri-date">${dateStr}</span>
+                        ${canDelete ? `<button class="btn-del" onclick="deleteEntry('${e.id}')">eliminar</button>` : ''}
+                    </div>
+                </li>`;
+            }).join('');
+        }
+
+        function showToast(msg, isErr = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast' + (isErr ? ' err' : '');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+    </script>
+</body>
+</html>
