@@ -27,6 +27,7 @@ Dashboard online para que el equipo UXR registre no-shows de entrevistas con usu
 - **Project ID:** `sndfpwokkgqlxylkfxfx`
 - **URL:** `https://sndfpwokkgqlxylkfxfx.supabase.co`
 - **Publishable key:** `sb_publishable_iZ80o9a6xxn0123VYv4MLA_ARMfgS9i`
+- **Anon JWT key (usar este):** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuZGZwd29ra2dxbHh5bGtmeGZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyOTQzMjYsImV4cCI6MjA5MTg3MDMyNn0.ys9cBHNu1ZV6HK-07w5r7P_Y7Csg9e-uKvBFTe5WVwU`
 - **Organización:** PabloMargara's Org
 - **Proyecto:** uxr-noshow-tracker
 
